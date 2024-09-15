@@ -12,6 +12,11 @@
             src: url("/static/font/JetBrainsMono-Bold.woff2") format("woff2");
         }
 
+        @font-face {
+            font-family: "Paytone One";
+            src: url("/static/font/PaytoneOne.woff2") format("woff2");
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -25,7 +30,7 @@
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             font-size: 14px;
-            background-color: #f9e2c8;
+            background-color: #ece5da;
             margin: 1em auto;
             width: 980px;
         }
@@ -34,12 +39,19 @@
             color: #008b8b;
         }
 
+        .header {
+            margin-bottom: 3em;
+        }
+
         .header .left .logo {
-            font-size: 24px;
-            color: #008b8b;
+            font-family: 'Paytone One', sans-serif;
+            font-size: 60px;
+            line-height: 60px;
+            letter-spacing: 2px;
+            color: #f1ebe5;
             font-weight: bold;
             text-decoration: none;
-            text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 10.36px 8.896px #c4b59d,0 -2px 1px #fff;
         }
 
         .header .left .sub {
@@ -52,14 +64,10 @@
             text-decoration: underline;
         }
 
-        .container {
-            margin-top: 1em;
-        }
-
         .form-control {
             background-color: white;
-            border: 2px solid #7f7f7f;
-            border-radius: 0%;
+            border: 3px solid #7f7f7f;
+            border-radius: 4px;
             outline: rgba(0, 139, 139, 1);
             resize: none;
             width: 50%;
@@ -68,17 +76,22 @@
         }
 
         .form-select {
+            width: 120px;
             background-color: white;
-            border: 2px solid #7f7f7f;
-            border-radius: 0%;
+            border: 3px solid #7f7f7f;
+            border-radius: 4px;
             outline: rgba(0, 139, 139, 1);
             font-size: 1rem;
             padding: 0.5rem;
         }
 
+        .form-select:first-child {
+            margin-right: 0.2em;
+        }
+
         .form-control:focus,
         .form-select:focus {
-            border: 2px solid #008b8b;
+            border: 3px solid #008b8b;
         }
 
         .pasteful-title,
@@ -87,7 +100,7 @@
             display: block;
             margin: 0 auto;
             width: 100%;
-            margin-bottom: 1.5em;
+            margin-bottom: 3em;
             resize: vertical;
         }
 
@@ -98,11 +111,20 @@
             margin-bottom: 0;
         }
 
+        .pasteful-reference {
+            margin-top: 1em;
+        }
+
         .code,
         .CodeMirror * {
             font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
             border: none;
+        }
+
+        .CodeMirror {
+            border-radius: 4px;
+            margin-top: 1em;
         }
 
         .form-section-sub {
@@ -121,12 +143,12 @@
     </header>
 
     <main class="container">
-        <textarea rows="4" name="title" class="form-control pasteful-title" placeholder="Enter a description of this pasteful snippet [Markdown supported]..."></textarea>
+        <textarea rows="4" name="title" class="form-control pasteful-title" placeholder="Enter a description of this pasteful snippet (Markdown supported)..."></textarea>
         <div class="form-section">
             <div class="form-section-sub">
                 <div class="left">
                     <input type="text" class="form-control pasteful-filename" aria-label="Filename including extension..." name="filename" value="" placeholder="Filename including extension...">
-                    <textarea rows="4" class="form-control pasteful-reference" aria-label="Add a description for reference..." name="reference" placeholder="Add a description for reference..."></textarea>
+                    <textarea rows="4" class="form-control pasteful-reference" aria-label="Add a description for reference..." name="reference" placeholder="Add a description for reference (Markdown supported)..."></textarea>
                 </div>
                 
                 <div class="right">
