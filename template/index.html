@@ -121,7 +121,7 @@
     </header>
 
     <main class="container">
-        <textarea rows="4" class="form-control pasteful-title" placeholder="Enter a description of this pasteful snippet [Markdown supported]..."></textarea>
+        <textarea rows="4" name="title" class="form-control pasteful-title" placeholder="Enter a description of this pasteful snippet [Markdown supported]..."></textarea>
         <div class="form-section">
             <div class="form-section-sub">
                 <div class="left">
@@ -130,15 +130,15 @@
                 </div>
                 
                 <div class="right">
-                    <select class="form-select select-sm js-code-indent-mode" aria-label="Indent mode">
+                    <select name="indent_mode" class="form-select code-indent-mode" aria-label="Indent mode">
                         <optgroup label="Indent mode">
                             <option value="space">Spaces</option>
-                            <option value="tab">Tabs</option>
+                            <option value="tab" selected>Tabs</option>
                         </optgroup>
                     </select>
-                    <select class="form-select select-sm js-code-indent-width" aria-label="Indent size">
+                    <select name="indent_size" class="form-select code-indent-width" aria-label="Indent size">
                         <optgroup label="Indent size">
-                            <option value="2">2</option>
+                            <option value="2" selected>2</option>
                             <option value="4">4</option>
                             <option value="8">8</option>
                         </optgroup>
@@ -150,8 +150,7 @@
 
 func main() {
     fmt.Println("Hello")
-}
-            </textarea>
+}</textarea>
         </div>
     </main>
 
@@ -159,37 +158,71 @@ func main() {
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/go/go.min.js"></script>
 
     <script>
+        let codeEditor = document.querySelectorAll('.code')
+
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll('.code').forEach(element => {
-                var editor = CodeMirror.fromTextArea(element, {
+            codeEditor.forEach(element => {
+                let editor = CodeMirror.fromTextArea(element, {
                     lineNumbers: true,
                     mode: 'text/x-go',
-                });
+                })
 
                 editor.setOption('theme', 'ayu-mirage')
-                // editor.setOption('extraKeys', {
-                //     Tab: betterTab
-                // })
-                editor.setOption("indentUnit", "\t")
-            });
-        });
+                editor.setOption('extraKeys', DefaultKeyMappings)
 
-        function betterTab(cm) {
-            // if (cm.somethingSelected()) {
-            //     cm.indentSelection("add");
-            // } else {
-            //     cm.replaceSelection(cm.getOption("indentWithTabs")? "\t":
-            //     Array(cm.getOption("indentUnit") + 1).join(" "), "end", "+input");
-            // }
+                let indentModeControl = element.parentElement.querySelectorAll('.code-indent-mode')
+                let indentWidthControl = element.parentElement.querySelectorAll('.code-indent-width')
 
-            // if (cm.somethingSelected()) {
-            //     cm.indentSelection("add");
-            // } else {
-            //     cm.replaceSelection(!cm.getOption("indentWithTabs") ? "\t" : Array(cm.getOption("indentUnit") + 1).join(" "), "end", "+input")
-            // }
+                editor.setOption('tabSize', parseInt(indentWidthControl[0].value))
+                editor.setOption('indentUnit', parseInt(indentWidthControl[0].value))
+                editor.setOption('indentWithTabs', indentModeControl[0].value !== 'space')
+
+                indentWidthControl.forEach(indentWidthElement => {
+                    indentWidthElement.addEventListener('change', () => {
+                        editor.setOption('tabSize', parseInt(indentWidthElement.value))
+                        editor.setOption('indentUnit', parseInt(indentWidthElement.value))
+                    })
+                })
+
+                indentModeControl.forEach(indentModeElement => {
+                    indentModeElement.addEventListener('change', () => {
+                        editor.setOption('indentWithTabs', indentModeElement.value !== 'space')
+                    })
+                })
+            })
+        })
+
+        const DISALLOW_LINKYFY_ON_PASTE = new WeakMap()
+        const FOCUS_TRAP_DISABLED = new WeakMap()
+
+        const DefaultKeyMappings = {
+            Tab: (cm) => {
+                if (FOCUS_TRAP_DISABLED.get(cm)) {
+                    return CodeMirror.Pass
+                }
+
+                if (cm.somethingSelected()) {
+                    cm.indentSelection('add')
+                    return
+                }
+                if (cm.getOption('indentWithTabs')) {
+                    cm.replaceSelection('\t', 'end', '+input')
+                } else {
+                    cm.execCommand('insertSoftTab')
+                }
+            },
+            'Shift-Tab': (cm) => {
+                if (FOCUS_TRAP_DISABLED.get(cm)) {
+                    return CodeMirror.Pass
+                }
+
+                cm.indentSelection('subtract')
+            },
+            'Cmd-/': 'toggleComment',
+            'Ctrl-/': 'toggleComment',
         }
 
-CodeMirror.modeInfo = [
+modeInfo = [
     {name: "APL", mime: "text/apl", mode: "apl", ext: ["dyalog", "apl"]},
     {name: "PGP", mimes: ["application/pgp", "application/pgp-encrypted", "application/pgp-keys", "application/pgp-signature"], mode: "asciiarmor", ext: ["asc", "pgp", "sig"]},
     {name: "ASN.1", mime: "text/x-ttcn-asn", mode: "asn.1", ext: ["asn", "asn1"]},
@@ -353,16 +386,16 @@ CodeMirror.modeInfo = [
 
   let findModeByExtension = function(ext) {
     ext = ext.toLowerCase();
-    for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
-      var info = CodeMirror.modeInfo[i];
+    for (var i = 0; i < modeInfo.length; i++) {
+      var info = modeInfo[i];
       if (info.ext) for (var j = 0; j < info.ext.length; j++)
         if (info.ext[j] == ext) return info;
     }
   };
 
   let findModeByFileName = function(filename) {
-    for (var i = 0; i < CodeMirror.modeInfo.length; i++) {
-      var info = CodeMirror.modeInfo[i];
+    for (var i = 0; i < modeInfo.length; i++) {
+      var info = modeInfo[i];
       if (info.file && info.file.test(filename)) return info;
     }
     var dot = filename.lastIndexOf(".");
