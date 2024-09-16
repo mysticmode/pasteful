@@ -162,15 +162,15 @@
                 <div class="right">
                     <select name="indent_mode" class="form-select code-indent-mode" aria-label="Indent mode">
                         <optgroup label="Indent mode">
-                            <option value="space">Spaces</option>
-                            <option value="tab" selected>Tabs</option>
+                            <option value="space" selected>Spaces</option>
+                            <option value="tab">Tabs</option>
                         </optgroup>
                     </select>
                     <select name="indent_size" class="form-select code-indent-width" aria-label="Indent size">
                         <optgroup label="Indent size">
-                            <option value="2" selected>2</option>
+                            <option value="2">2</option>
                             <option value="4">4</option>
-                            <option value="8">8</option>
+                            <option value="8" selected>8</option>
                         </optgroup>
                     </select>
                 </div>
@@ -188,10 +188,37 @@
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/go/go.min.js"></script>
 
     <script>
+        let code = document.querySelectorAll('.code')
         document.addEventListener("DOMContentLoaded", () => {
-            let editor = selectCodeEditor()
-            editor.forEach(element => {
-                editorConfig(element)
+            code.forEach(element => {
+                let editor = CodeMirror.fromTextArea(element, {
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    mode: 'text/x-go',
+                })
+
+                editor.setOption('theme', 'ayu-mirage')
+                editor.setOption('extraKeys', DefaultKeyMappings)
+
+                let indentModeControl = element.parentElement.querySelectorAll('.code-indent-mode')
+                let indentWidthControl = element.parentElement.querySelectorAll('.code-indent-width')
+
+                editor.setOption('tabSize', parseInt(indentWidthControl[0].value))
+                editor.setOption('indentUnit', parseInt(indentWidthControl[0].value))
+                editor.setOption('indentWithTabs', indentModeControl[0].value !== 'space')
+
+                indentWidthControl.forEach(indentWidthElement => {
+                    indentWidthElement.addEventListener('change', () => {
+                        editor.setOption('tabSize', parseInt(indentWidthElement.value))
+                        editor.setOption('indentUnit', parseInt(indentWidthElement.value))
+                    })
+                })
+
+                indentModeControl.forEach(indentModeElement => {
+                    indentModeElement.addEventListener('change', () => {
+                        editor.setOption('indentWithTabs', indentModeElement.value !== 'space')
+                    })
+                })
             })
 
             let codemirror = selectCodeMirror()
