@@ -80,17 +80,35 @@
             
         }
 
+        .form-action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .button {
             padding: 0.5em;
-            border: none;
-            background-color: #008b8b;
+            border: 2px solid #2b5a5a;
+            background-color: #f0f0f0;
             font-size: 1rem;
-            color: white;
+            color: inherit;
             cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: silver;
         }
 
         .button span {
             font-size: 1.2rem;
+        }
+
+        .button.button-primary {
+            background-color: #55a7a7;
+        }
+
+        .button.button-primary:hover {
+            background-color: #008b8b;
         }
     </style>
 </head>
@@ -112,7 +130,14 @@
             <textarea onkeyup="textAreaAdjust(this)"  class="form-control pasteful-reference" name="reference" placeholder="optional: Add a description for reference (Markdown supported)..."></textarea>
             
             <textarea onkeyup="textAreaAdjust(this)" class="form-control code" name="code" placeholder="* Put your code here..." name="code"></textarea>
+        </div>
+
+        <div class="form-action">
             <button class="button" type="button"><span>+</span> Add new file</button>
+            <div>
+                <button class="button button-secondary" type="button">Save</button>
+                <button class="button button-primary" type="button">Publish</button>
+            </div>
         </div>
     </main>
     <script>
