@@ -60,8 +60,10 @@
         }
 
         textarea.form-control {
-            overflow-y: hidden;
+            white-space: pre;
+            overflow-wrap: normal;
             overflow-x: auto;
+            overflow-y: hidden;
             resize: none;
         }
 
@@ -71,6 +73,12 @@
 
         .form-title {
             margin-bottom: 0.5em;
+        }
+
+        .form-section .form-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         textarea.form-control.code {
@@ -110,6 +118,14 @@
         .button.button-primary:hover {
             background-color: #008b8b;
         }
+
+        .button.button-delete {
+            background-color: #d58181;
+        }
+
+        .button.button-delete:hover {
+            background-color: #bb6565;
+        }
     </style>
 </head>
 <body>
@@ -124,16 +140,18 @@
             <textarea onkeyup="textAreaAdjust(this)"  name="description" class="form-control pasteful-title" placeholder="optional: Enter a description of this pasteful snippet (Markdown supported)..."></textarea>
         </div>
 
-        <div class="form-section">
-            <div class="form-title">Start creating snippet below:</div>
-            <input type="text" class="form-control pasteful-filename" name="filename" placeholder="* Filename including extension...">
-            <textarea onkeyup="textAreaAdjust(this)"  class="form-control pasteful-reference" name="reference" placeholder="optional: Add a description for reference (Markdown supported)..."></textarea>
-            
-            <textarea onkeyup="textAreaAdjust(this)" class="form-control code" name="code" placeholder="* Put your code here..." name="code"></textarea>
+        <div id="snippet">
+            <div class="form-section">
+                <div class="form-title">Start creating snippet below: <span class="right"><button class="button button-delete" type="button" onclick="deleteFile(this)"><span>x</span> Delete</button></span></div>
+                <input type="text" class="form-control pasteful-filename" name="filename" placeholder="* Filename including extension...">
+                <textarea onkeyup="textAreaAdjust(this)"  class="form-control pasteful-reference" name="reference" placeholder="optional: Add a description for reference (Markdown supported)..."></textarea>
+                
+                <textarea onkeyup="textAreaAdjust(this)" class="form-control code" name="code" placeholder="* Put your code here..." name="code"></textarea>
+            </div>
         </div>
 
         <div class="form-action">
-            <button class="button" type="button"><span>+</span> Add new file</button>
+            <button class="button" type="button" onclick="addNewFile()"><span>+</span> Add new file</button>
             <div>
                 <button class="button button-secondary" type="button">Save</button>
                 <button class="button button-primary" type="button">Publish</button>
@@ -144,6 +162,20 @@
         function textAreaAdjust(element) {
             element.style.height = "1px";
             element.style.height = (25+element.scrollHeight)+"px";
+        }
+
+        function addNewFile() {
+            const innerString = '<div class="form-title">Start creating snippet below: <span class="right"><button class="button button-delete" type="button" onclick="deleteFile(this)"><span>x</span> Delete</button></span></div><input type="text" class="form-control pasteful-filename" name="filename" placeholder="* Filename including extension..."><textarea onkeyup="textAreaAdjust(this)"  class="form-control pasteful-reference" name="reference" placeholder="optional: Add a description for reference (Markdown supported)..."></textarea><textarea onkeyup="textAreaAdjust(this)" class="form-control code" name="code" placeholder="* Put your code here..." name="code"></textarea>'
+            const outerDiv = document.createElement("div")
+            outerDiv.className = "form-section"
+            outerDiv.innerHTML = innerString
+
+            const snippet = document.getElementById("snippet")
+            snippet.append(outerDiv)
+        }
+
+        function deleteFile(element) {
+            element.closest('.form-section').remove()
         }
     </script>
 </body>
