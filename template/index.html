@@ -85,7 +85,12 @@
             font-family: 'JetBrains Mono', monospace;
             color: #444;
             font-size: 0.9rem;
-            
+        }
+
+        .form-select {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 0;
         }
 
         .form-action {
@@ -94,13 +99,18 @@
             justify-content: space-between;
         }
 
-        .button {
+        .button, select {
             padding: 0.5em;
             border: 2px solid #2b5a5a;
             background-color: #f0f0f0;
             font-size: 1rem;
             color: inherit;
             cursor: pointer;
+            outline: none;
+        }
+
+        select {
+            padding: 0.2em;
         }
 
         .button:hover {
@@ -145,8 +155,23 @@
                 <div class="form-title">Start creating snippet below: <span class="right"><button class="button button-delete" type="button" onclick="deleteFile(this)"><span>x</span> Delete</button></span></div>
                 <input type="text" class="form-control pasteful-filename" name="filename" placeholder="*Filename including extension...">
                 <textarea onkeyup="textAreaAdjust(this)"  class="form-control pasteful-reference" name="reference" placeholder="Add a description for reference..."></textarea>
-                
-                <textarea onkeyup="textAreaAdjust(this)" class="form-control code" name="code" placeholder="*Put your code here..." name="code"></textarea>
+                <div class="form-select">
+                    <select aria-label="Indent mode" class="indent-type">
+                        <optgroup label="Indent mode">
+                            <option value="space">Spaces</option>
+                            <option value="tab">Tabs</option>
+                        </optgroup>
+                    </select>
+                    <select aria-label="Indent size" class="indent-size">
+                        <optgroup label="Indent size">
+                            <option value="2">2</option>
+                            <option value="4">4</option>
+                            <option value="8">8</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <textarea onkeyup="textAreaAdjust(this)" onkeydown="handleTabs.call(this, event)" class="form-control code" name="code" placeholder="*Put your code here..." name="code"></textarea>
             </div>
         </div>
 
@@ -162,6 +187,34 @@
         function textAreaAdjust(element) {
             element.style.height = "1px";
             element.style.height = (25+element.scrollHeight)+"px";
+        }
+
+        function handleTabs(e) {
+            if (e.key == "Tab") {
+                e.preventDefault();
+
+                let formSelect = e.target.parentNode.children[3]
+                let indentType = formSelect.children[0].value
+                let indentSize = formSelect.children[1].value
+                let indentString = ""
+
+                if (indentType === "space") {
+                    for (i = 0; i < indentSize; i++) {
+                        indentString += " "
+                    }
+                } else {
+                    indentString = "\t"
+                    e.target.style.tabSize = indentSize
+                }
+
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+
+                this.value =
+                    this.value.substring(0, start) + indentString + this.value.substring(end);
+
+                this.selectionStart = this.selectionEnd = start + indentSize;
+            }
         }
 
         function addNewFile() {
